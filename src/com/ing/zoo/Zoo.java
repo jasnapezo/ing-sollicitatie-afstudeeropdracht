@@ -1,38 +1,93 @@
 package com.ing.zoo;
 
+import com.ing.zoo.animal.AbstractAnimal;
+import com.ing.zoo.animal.carnivore.Carnivore;
+import com.ing.zoo.animal.herbivore.Herbivore;
+import com.ing.zoo.animal.herbivore.Hippo;
+import com.ing.zoo.animal.carnivore.Lion;
+import com.ing.zoo.animal.herbivore.Monkey;
+import com.ing.zoo.animal.Performable;
+import com.ing.zoo.animal.omnivore.Pig;
+import com.ing.zoo.animal.carnivore.Snake;
+import com.ing.zoo.animal.carnivore.Tiger;
+import com.ing.zoo.animal.herbivore.Zebra;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
+import static com.ing.zoo.Command.HELLO;
+
 public class Zoo {
+
+    private static final String UNKNOWN_COMMAND = "Unknown command: ";
+
     public static void main(String[] args)
     {
-        String[] commands = new String[4];
-        commands[0] = "hello";
-        commands[1] = "give leaves";
-        commands[2] = "give meat";
-        commands[3] = "perform trick";
-
-        Lion henk = new Lion();
-        henk.name = "henk";
-        Hippo elsa = new Hippo();
-        elsa.name = "elsa";
-        Pig dora = new Pig();
-        dora.name = "dora";
-        Tiger wally = new Tiger();
-        wally.name = "wally";
-        Zebra marty = new Zebra();
-        marty.name = "marty";
+        List<AbstractAnimal> abstractAnimals = new ArrayList<>();
+        abstractAnimals.add(new Lion("henk"));
+        abstractAnimals.add(new Hippo("elsa"));
+        abstractAnimals.add(new Pig("dora"));
+        abstractAnimals.add(new Tiger("wally"));
+        abstractAnimals.add(new Zebra("marty"));
+        abstractAnimals.add(new Monkey("ari"));
+        abstractAnimals.add(new Snake("kaa"));
 
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Voer uw command in: ");
 
-        String input = scanner.nextLine();
-        if(input.equals(commands[0] + " henk"))
-        {
-            henk.sayHello();
+        String input;
+        Command command;
+        do {
+            System.out.print("Voer uw command in: ");
+            input = scanner.nextLine();
+            command = Command.fromString(input);
+
+            switch (command){
+                case HELLO : sayHello(abstractAnimals, input);break;
+                case GIVE_LEAVES: herbivoreEat(abstractAnimals); break;
+                case GIVE_MEAT: carnivoreEat(abstractAnimals); break;
+                case PERFORM_TRICK: performTrick(abstractAnimals); break;
+                case EXIT: break;
+                default:  System.out.println(UNKNOWN_COMMAND + input);
+            }
+        } while (command != Command.EXIT);
+    }
+
+    private static void sayHello(List<AbstractAnimal> abstractAnimals, String input) {
+        if(input.toLowerCase().startsWith(HELLO.getValue() + " ")){
+            String name = input.substring(HELLO.getValue().length() + 1);
+            Optional<AbstractAnimal> animalOptional = abstractAnimals.stream()
+                    .filter(animal -> animal.getName().equals(name))
+                    .findFirst();
+            if(animalOptional.isPresent()){
+                animalOptional.get().sayHello();
+            } else {
+                System.out.println(UNKNOWN_COMMAND + input);
+            }
+        } else {
+            abstractAnimals.forEach(AbstractAnimal::sayHello);
         }
-        else
-        {
-            System.out.println("Unknown command: " + input);
-        }
+    }
+
+    private static void performTrick(List<AbstractAnimal> abstractAnimals) {
+        abstractAnimals.stream()
+                .filter(Performable.class::isInstance)
+                .map(Performable.class::cast)
+                .forEach(Performable::performTrick);
+    }
+
+    private static void carnivoreEat(List<AbstractAnimal> abstractAnimals) {
+        abstractAnimals.stream()
+                .filter(Carnivore.class::isInstance)
+                .map(Carnivore.class::cast)
+                .forEach(Carnivore::eatMeat);
+    }
+
+    private static void herbivoreEat(List<AbstractAnimal> abstractAnimals) {
+        abstractAnimals.stream()
+                .filter(Herbivore.class::isInstance)
+                .map(Herbivore.class::cast)
+                .forEach(Herbivore::eatLeaves);
     }
 }

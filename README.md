@@ -1,37 +1,66 @@
 ﻿# Zoo Java Console Application
 ---
-## Git
+## Uitleg
 
-Voor het maken van deze opdracht wordt er gebruik gemaakt van het versiebeheersysteem Git.
+ - package structuur
+ - abstract classes
+ - interfaces
+ - Enum
+ - Zoo class
 
-Gebruikte **IDE**: [IntelliJ IDEA](https://www.jetbrains.com/idea/). (**Niet verplicht**)
 
-Gebruikte **SDK**: [JDK 1.8](https://bitbucket.org/kychu/zoo/downloads/java-1.8.0-openjdk-1.8.0.212-3.b04.redhat.windows.x86_64.zip).
+## Package structuur
 
-Mocht er problemen zijn met het openen van dit project, creëer dan een nieuw project binnen jouw IDE en kopieer de Java bestanden uit `src/com/ing/zoo`
+De package structuur is aangepast naar de dier soorten die er zijn. Als eerst is er een animal package gemaakt voor de
+generieke dieren classen zoals Animal en Performable. Daaronder zijn dier soort packages gemaakt om de
+onderscheid te kunnen maken tussen dieren die plant, vlees of beide eten. Vandaar ook de methodes eatMeat and eatPlant.
 
-Stappen:
+## Abstract class
 
-1. Clone deze repository.
-2. Maak een nieuwe repository aan, bijvoorbeeld op [Github](https://www.github.com).
-3. Push jouw veranderingen naar jouw repository.
-4. Maak jouw repository openbaar (public).
-4. Als de applicatie af is, push dan de laatste versie naar jouw `master` branch.
+Er is 1 generieke abstract class Animal die de generieke attributen bevat die alle dieren hebben. Ook de sayHello methode valt hier onder,
+omdat deze uit alle dier classen aangeroepen moet worden. Daarnaast zijn er voor de verschillende diersoorten abstracte classen om generieke methodes
+te defineren die aangeroepen kunnen worden per diersoort.
 
---- 
-## Opdracht
-- Maak de applicatie af.
-- Reorganiseer eventueel de folder structuur.
-- Refactor eventueel de code (denk goed na over de class structure).
-	- Probeer er voor de zorgen dat je bijvoorbeeld geen EatMeat methode kan aanroepen op een Zebra object.
-- Voeg 2 nieuwe dieren toe.
----
-## Eisen
+## Interfaces
 
-Bij elke command laat je het resultaat in de console  zien.
+Voor elk diersoort is een interface. Een carnivore heeft een eatMeat methode, omdat deze vlees eet. Een herbivore
+heeft een eatLeafs, omdat deze alleen planten eet. Een Ommnivore extends beide, omdat deze zowel vlees als planten eet.
 
-- Als je de [hello] command uitvoert zonder dat er een naam is ingevuld zeggen alle dieren hallo.
-	- Als er wel een naam is ingevuld [hello henk] zegt alleen dat dier hallo 
-- Als je de [give leaves] command uitvoert krijgen alle herbivores leaves.
-- Als je de [give meat] command uitvoert krijgen alle carnivores meat.
-- Als je de [perform trick] command uitvoert doen alle dieren die dat kunnen hun trucje.
+Er is nog een generieke interface gemaakt, performable. Deze wordt alleen toegekend aan dier classen die een trucje kunnen doen.
+
+## Enum
+
+De enum Command is geïmplementeerd om de commando's in een eigen classe te plaatsen en om een enum te kunnen gebruiken.
+Met de fromString methode kan de input string omgezet worden naar een enum en kan deze gebruikt worden in de verdere code,
+in plaats van de string en de array met commando's. 
+
+## Zoo class
+
+De dieren classen worden allemaal aangemaakt en in een arraylist gezet, zodat ze later makkelijk gefilterd kunnen worden waar nodig.
+Daarna wordt er aan de hand van een do while loop eerst de input gelezen en omgezet naar een Command enum. Deze wordt via een switch verwerkt.
+
+
+Als de command HELLO is dan wordt er eerste gekeken of er ook een naar achter komt, door een spatie " " achter "hello" te plakken. 
+Als dit zo is dan wordt door middel van substring alles achter "hello " als naam gepakt. Mocht dit een naam zijn van 1 van de dieren
+dan wordt sayHello van dat dier aangeroepen, andere is de input niet valide. 
+Als de input "hello" is dan wordt sayHello van alle dieren aangeroepen.
+
+
+Als de command "GIVE_LEAVES" is dan wordt eerst een filter op de lijst met dieren toegepast om alleen herbivore dieren over te houden.
+Daarna worden deze classes gecast naar herbivore class om de eatLeafs aan te kunnen roepen.
+
+
+Als de command "GIVE_MEAT" is dan wordt eerst een filter op de lijst met dieren toegepast om alleen carnivore dieren over te houden.
+Daarna worden deze classes gecast naar carnivore class om de eatMeat aan te kunnen roepen.
+
+
+Als de command "PERFORM_TRICK" is dan wordt eerst de filter op de lijst van dieren toegepast om alleen dieren die een trucje kunnen over te houden.
+Daarna worden deze classen gecast naar performable class om de performTrick aan te kunnen roepen.
+
+
+als de command "EXIT" is dan wordt deze overgeslagen in de switch doormiddel van alleen een break. Bij de while wordt deze dan true en stopt de switch en 
+de programma
+
+
+Bij andere inputes wordt een onbekend commando weergegeven.
+
